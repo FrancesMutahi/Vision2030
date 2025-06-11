@@ -119,9 +119,22 @@ with st.sidebar:
     #sector_filter = st.selectbox("Select Sector", ["All"] + df["Sector"].unique().tolist())
     #status_filter = st.selectbox("Select Status", ["All"] + df["Status"].unique().tolist())
 
-    filtered_df = df [ 
-            (df ["Pillar"].isin(selected_pillars)) &
-            (df["Status"].isin(selected_status))
-            ]
+    filtered_df = df[
+        (df["Pillar"].isin(selected_pillars if "All" not in selected_pillars else df["Pillar"])) &
+        (df["Status"].isin(selected_status if "All" not in selected_status else df["Status"]))
+    ]
+
     
     st.dataframe(filtered_df, use_container_width=True)
+
+st.subheader("📈 Project by sector")
+sector_counts = filtered_df["Sector"].value_counts()
+st.bar_chart(sector_counts)
+
+st.subheader("📊 Project Status Distribution")
+status_counts = filtered_df["Status"].value_counts()
+st.bar_chart(status_counts)
+
+with st.expander("📚 About Vision 2030"):
+    for i, row in filtered_df.iterrows():
+       st.markdown(f"**Project:** {row['Progress Note']}")

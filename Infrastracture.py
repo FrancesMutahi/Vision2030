@@ -1,4 +1,6 @@
 import pandas as pd
+import streamlit as st
+# Streamlit app to display Vision 2030 projects data
 
 # Sample projects from the Vision 2030 Progress Report 2020/21
 projects_data = [
@@ -86,6 +88,40 @@ projects_data = [
 ]
 
 df = pd.DataFrame(projects_data)
-df.to_csv("vision2030_sample.csv", index=False)
+#df.to_csv("vision2030_sample.csv", index=False)
 # Display the first few rows of the DataFrame
-df.head()
+#print("Sample projects data for Vision 2030:")
+#print(df.head())
+
+st.set_page_config(page_title="Vision 2030 Projects Dashboard", layout="wide")
+st.title("Vision 2030 Projects Progress 2020/2021 Dashboard")
+st.write("This dashboard displays key projects under the Vision 2030 initiative, focusing on infrastructure development across various sectors. The data was last updated in 2021/2022.")
+st.dataframe(df)
+
+# Add a sidebar for navigation
+with st.sidebar:
+    st.header("📊 Filter Projects")
+    st.write("Use this sidebar to navigate through the Vision 2030 projects data.")
+    st.write("You can filter projects by Pillar, Sector, or Status using the options below.")
+    selected_pillars = st.multiselect(
+        "Select Pillars",
+        options=["All"] + df["Pillar"].unique().tolist(),
+        default=["All"]
+    )
+    selected_status = st.multiselect(
+        "Select Status",
+        options=["All"] + df["Status"].unique().tolist(),
+        default=["All"]
+    )
+
+    # Filter options
+    #pillar_filter = st.selectbox("Select Pillar", ["All"] + df["Pillar"].unique().tolist())
+    #sector_filter = st.selectbox("Select Sector", ["All"] + df["Sector"].unique().tolist())
+    #status_filter = st.selectbox("Select Status", ["All"] + df["Status"].unique().tolist())
+
+    filtered_df = df [ 
+            (df ["Pillar"].isin(selected_pillars)) &
+            (df["Status"].isin(selected_status))
+            ]
+    
+    st.dataframe(filtered_df, use_container_width=True)
